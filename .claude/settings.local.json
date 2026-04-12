@@ -1,7 +1,31 @@
 {
   "permissions": {
     "allow": [
-      "Bash(wc -l d:/Users/op21b/Decrypt-AES/design/rtl/*.v d:/Users/op21b/Decrypt-AES/design/rtl/crypto/*.v d:/Users/op21b/Decrypt-AES/design/rtl/util/*.v d:/Users/op21b/Decrypt-AES/design/rtl/inc/*.vh)"
+      "Bash(wc -l d:/Users/op21b/Decrypt-AES/design/rtl/*.v d:/Users/op21b/Decrypt-AES/design/rtl/crypto/*.v d:/Users/op21b/Decrypt-AES/design/rtl/util/*.v d:/Users/op21b/Decrypt-AES/design/rtl/inc/*.vh)",
+      "Bash(wc -l d:/Users/op21b/Decrypt-AES/design/rtl/*.v d:/Users/op21b/Decrypt-AES/design/rtl/**/*.v)",
+      "Bash(cat d:/Users/op21b/Decrypt-AES/prompt/*)",
+      "Bash(gcc -O2 -Wall -Wextra -std=c99 -o sw_test sw_test.c aes128_ctr.c crc32.c)",
+      "Read(//usr/**)",
+      "Read(//mingw64/**)",
+      "Read(//c/msys64/mingw64/**)",
+      "Bash(command -v gcc cc clang)",
+      "Bash(where gcc:*)",
+      "Bash(where cl:*)",
+      "Bash(ls /usr/bin/gcc* /usr/bin/cc*)",
+      "Bash(find /usr /c /opt /mingw* -name \"gcc.exe\")",
+      "Bash(winget install:*)",
+      "Bash(/c/msys64/usr/bin/pacman.exe -S --noconfirm mingw-w64-x86_64-gcc)",
+      "Bash(/c/msys64/mingw64/bin/gcc.exe --version)",
+      "Bash(/c/msys64/mingw64/bin/gcc.exe -O2 -Wall -Wextra -std=c99 -o sw_test sw_test.c aes128_ctr.c crc32.c)",
+      "Bash(/c/msys64/mingw64/bin/gcc.exe -O2 -Wall -Wextra -std=c99 -o sw_test.exe sw_test.c aes128_ctr.c crc32.c)",
+      "Bash(echo \"EXIT: $?\")",
+      "Bash(echo \"exit=$?\")",
+      "Bash(/c/msys64/mingw64/bin/gcc.exe -v)",
+      "Bash(/c/msys64/mingw64/bin/gcc.exe -O2 -Wall -std=c99 sw_test.c aes128_ctr.c crc32.c -o sw_test.exe)",
+      "Read(//tmp/**)",
+      "Bash(./sw_test.exe)",
+      "Bash(ls \"d:/Users/op21b/Decrypt-AES/host_software/\"*.exe)",
+      "Bash(ls \"d:/Users/op21b/Decrypt-AES/host_software/sw_test\"*)"
     ]
   }
 }
