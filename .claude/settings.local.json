@@ -1,0 +1,7 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(wc -l d:/Users/op21b/Decrypt-AES/design/rtl/*.v d:/Users/op21b/Decrypt-AES/design/rtl/crypto/*.v d:/Users/op21b/Decrypt-AES/design/rtl/util/*.v d:/Users/op21b/Decrypt-AES/design/rtl/inc/*.vh)"
+    ]
+  }
+}
