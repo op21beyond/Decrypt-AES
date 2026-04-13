@@ -25,6 +25,7 @@
 module crc32_engine (
     input  wire        clk,
     input  wire        rst_n,
+    input  wire        init,           // synchronous init: resets CRC state to 0xFFFFFFFF
 
     // Configuration
     input  wire        alg_sel,        // 0=IEEE 802.3, 1=CRC-32C
@@ -119,6 +120,11 @@ module crc32_engine (
 
     always @(posedge clk or negedge rst_n) begin
         if (!rst_n) begin
+            crc_reg <= 32'hFFFFFFFF;
+        end else if (init) begin
+            // Synchronous init: reset CRC accumulator to the standard initial value.
+            // Using a dedicated init input avoids gating rst_n combinationally,
+            // which can cause synthesis/STA issues with asynchronous reset trees.
             crc_reg <= 32'hFFFFFFFF;
         end else if (valid) begin
             if (alg_sel == 1'b0)

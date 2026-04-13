@@ -384,9 +384,14 @@ module aes_decrypt_engine (
     );
 
     // --- CRC engine ---
+    // crc_init is a one-cycle pulse from ctrl FSM that resets the accumulator
+    // between jobs.  It is driven as a synchronous init rather than by gating
+    // rst_n, which avoids a combinational path on the asynchronous reset net
+    // and is cleaner for synthesis/STA.
     crc32_engine u_crc (
         .clk        (clk),
-        .rst_n      (crc_init ? 1'b0 : rst_n),  // re-use rst_n with init
+        .rst_n      (rst_n),
+        .init       (crc_init),
         .alg_sel    (crc_alg_sel),
         .valid      (cipher_valid && !cipher_stall),
         .wr_data    (cipher_data),

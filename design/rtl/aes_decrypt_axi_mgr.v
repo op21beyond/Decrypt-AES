@@ -374,6 +374,34 @@ module aes_decrypt_axi_mgr (
         @(posedge clk) disable iff (!rst_n)
         m_awvalid |-> (m_awsize == `AXI_SIZE_8B && m_awburst == `AXI_BURST_INCR)
     ) else $error("[axi_mgr] AW: unexpected AxSIZE or AxBURST");
+
+    // -----------------------------------------------------------------------
+    // Simultaneous AR-acceptance + R-last-beat: outstanding counter stays the
+    // same (net zero), but BOTH the rd_id_fifo tail (push new ID) and head
+    // (pop completed ID) must move in the same cycle.  The head guard below
+    // verifies the FIFO is never popped when empty — even in this scenario.
+    ASSERT_RD_FIFO_NONEMPTY_ON_RLAST : assert property (
+        @(posedge clk) disable iff (!rst_n)
+        r_last_beat |-> (rd_id_head != rd_id_tail)
+    ) else $error("[axi_mgr] rd_id_fifo head==tail when R-last received (FIFO underrun)");
+
+    // Similarly: B-channel response must not arrive when the write ID FIFO is empty.
+    ASSERT_WR_FIFO_NONEMPTY_ON_B : assert property (
+        @(posedge clk) disable iff (!rst_n)
+        b_accepted |-> (wr_id_head != wr_id_tail)
+    ) else $error("[axi_mgr] wr_id_fifo head==tail when B-channel received (FIFO underrun)");
+
+    // Outstanding counter must not underflow (subtraction guard is already in
+    // the datapath; this assertion catches any gap in that logic).
+    ASSERT_RD_OUTSTANDING_NO_UNDERFLOW : assert property (
+        @(posedge clk) disable iff (!rst_n)
+        (!ar_accepted && r_last_beat) |-> (rd_outstanding > 5'd0)
+    ) else $error("[axi_mgr] rd_outstanding underflow: RLAST with no in-flight read");
+
+    ASSERT_WR_OUTSTANDING_NO_UNDERFLOW : assert property (
+        @(posedge clk) disable iff (!rst_n)
+        (!aw_accepted && b_accepted) |-> (wr_outstanding > 5'd0)
+    ) else $error("[axi_mgr] wr_outstanding underflow: B-resp with no in-flight write");
     `endif
 
 endmodule
