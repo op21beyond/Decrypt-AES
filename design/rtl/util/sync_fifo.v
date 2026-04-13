@@ -6,9 +6,23 @@
 //               Fall-through (show-ahead) mode: rd_data is valid whenever
 //               !empty, no read-enable required to present data.
 //               Single clock domain; no combinational loop; ASIC-safe.
+//
+//               Memory interface is EXTERNAL: the internal reg mem[] has been
+//               removed and replaced with a dual-port SRAM interface.
+//               Connect mem_* ports to the foundry SRAM macro via
+//               aes_decrypt_mem_top.  For simulation, connect to the
+//               sram_2p_NxM behavioral model.
+//
+//               SRAM interface (write-synchronous / read-asynchronous):
+//                 mem_wen  — write enable (active-high, registered by SRAM on CLK)
+//                 mem_wa   — write address
+//                 mem_wd   — write data
+//                 mem_ra   — read address  (asynchronous)
+//                 mem_q    — read data     (combinational output from SRAM)
+//
 // Parameters  :
 //   DATA_W   — data width in bits
-//   DEPTH    — number of entries (must be power of 2)
+//   DEPTH    — number of entries (must be power of 2, max 32)
 // =============================================================================
 
 module sync_fifo #(
@@ -31,14 +45,23 @@ module sync_fifo #(
     output wire              almost_empty,   // 1 or fewer entries remaining
 
     // Status
-    output wire [$clog2(DEPTH):0] count       // number of valid entries
+    output wire [$clog2(DEPTH):0] count,     // number of valid entries
+
+    // -------------------------------------------------------------------------
+    // External SRAM memory interface
+    // Connect to sram_2p_NxM (or foundry SRAM macro) via aes_decrypt_mem_top.
+    // -------------------------------------------------------------------------
+    output wire                         mem_wen,   // write enable  (active-high)
+    output wire [$clog2(DEPTH)-1:0]     mem_wa,    // write address
+    output wire [DATA_W-1:0]            mem_wd,    // write data
+    output wire [$clog2(DEPTH)-1:0]     mem_ra,    // read address (async)
+    input  wire [DATA_W-1:0]            mem_q      // read data    (async)
 );
 
     localparam PTR_W = $clog2(DEPTH);
 
-    reg [DATA_W-1:0] mem [0:DEPTH-1];
-    reg [PTR_W:0]    wr_ptr;    // extra bit for full/empty distinction
-    reg [PTR_W:0]    rd_ptr;
+    reg [PTR_W:0] wr_ptr;    // extra bit for full/empty distinction
+    reg [PTR_W:0] rd_ptr;
 
     wire [PTR_W-1:0] wr_addr = wr_ptr[PTR_W-1:0];
     wire [PTR_W-1:0] rd_addr = rd_ptr[PTR_W-1:0];
@@ -49,15 +72,9 @@ module sync_fifo #(
     assign almost_full  = (count >= DEPTH - 1);
     assign almost_empty = (count <= 1);
 
-    // Write
-    always @(posedge clk) begin
-        if (wr_en && !full) begin
-            mem[wr_addr] <= wr_data;
-            wr_ptr       <= wr_ptr + 1'b1;
-        end
-    end
-
-    // Read pointer advance
+    // -------------------------------------------------------------------------
+    // Pointer management (single always block — no double-driver)
+    // -------------------------------------------------------------------------
     always @(posedge clk or negedge rst_n) begin
         if (!rst_n) begin
             rd_ptr <= {(PTR_W+1){1'b0}};
@@ -70,9 +87,14 @@ module sync_fifo #(
         end
     end
 
-    // Show-ahead read: output registered entry at rd_addr
-    // (registered for timing; one cycle read latency, which is fine for FIFO use)
-    assign rd_data = mem[rd_addr];
+    // -------------------------------------------------------------------------
+    // External SRAM interface
+    // -------------------------------------------------------------------------
+    assign mem_wen = wr_en && !full;
+    assign mem_wa  = wr_addr;
+    assign mem_wd  = wr_data;
+    assign mem_ra  = rd_addr;
+    assign rd_data = mem_q;
 
     // -----------------------------------------------------------------------
     `ifdef ENABLE_ASSERTIONS

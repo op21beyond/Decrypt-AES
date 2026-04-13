@@ -76,7 +76,16 @@ module aes_decrypt_input_ctrl (
     output reg         crc_valid,       // pulse when CRC latched
 
     // Bus error
-    output reg         bus_err
+    output reg         bus_err,
+
+    // -------------------------------------------------------------------------
+    // Cipher FIFO external SRAM interface (pass-through to aes_decrypt_mem_top)
+    // -------------------------------------------------------------------------
+    output wire        cipher_mem_wen,
+    output wire [4:0]  cipher_mem_wa,
+    output wire [63:0] cipher_mem_wd,
+    output wire [4:0]  cipher_mem_ra,
+    input  wire [63:0] cipher_mem_q
 );
 
     assign rd_req_cache = arcache_in;
@@ -104,7 +113,13 @@ module aes_decrypt_input_ctrl (
         .rd_data     (fifo_rd_data),
         .empty       (fifo_empty),
         .almost_empty(),
-        .count       ()
+        .count       (),
+        // External SRAM interface — routed to aes_decrypt_mem_top
+        .mem_wen     (cipher_mem_wen),
+        .mem_wa      (cipher_mem_wa),
+        .mem_wd      (cipher_mem_wd),
+        .mem_ra      (cipher_mem_ra),
+        .mem_q       (cipher_mem_q)
     );
 
     // FIFO output drives cipher stream

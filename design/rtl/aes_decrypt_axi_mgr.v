@@ -124,6 +124,7 @@ module aes_decrypt_axi_mgr (
     input  wire [63:0] wr1_wdata,
     input  wire [ 7:0] wr1_wstrb,
     input  wire        wr1_wvalid,
+    input  wire        wr1_wlast,       // last beat of output burst (from output_ctrl)
     output wire        wr1_wready,
     output wire        wr1_resp_valid,
     output wire        wr1_resp_err,
@@ -328,11 +329,7 @@ module aes_decrypt_axi_mgr (
                 m_wvalid = wr1_wvalid;
                 m_wdata  = wr1_wdata;
                 m_wstrb  = wr1_wstrb;
-                m_wlast  = wr1_wvalid && (/* last beat signal from output ctrl */ 1'b0);
-                // Note: wr1_wlast is driven by the output controller via wr1_wvalid
-                // when it's the last beat.  To handle this correctly the output
-                // controller drives wlast inline; here we pass it through.
-                // Simplified: output ctrl marks last via wr1_wlast input (add port if needed).
+                m_wlast  = wr1_wlast;   // driven by aes_decrypt_output_ctrl
             end
         end
     end

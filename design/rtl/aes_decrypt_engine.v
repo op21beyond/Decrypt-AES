@@ -149,10 +149,23 @@ module aes_decrypt_engine (
     wire [2:0]  wr1_req_prot;
     wire [63:0] wr1_wdata;
     wire [7:0]  wr1_wstrb;
-    wire        wr1_wvalid, wr1_wready;
+    wire        wr1_wvalid, wr1_wready, wr1_wlast;
     wire        wr1_resp_valid, wr1_resp_err;
 
     wire        bus_error_out;
+
+    // --- SRAM memory interfaces ---
+    wire        cipher_mem_wen;
+    wire [4:0]  cipher_mem_wa;
+    wire [63:0] cipher_mem_wd;
+    wire [4:0]  cipher_mem_ra;
+    wire [63:0] cipher_mem_q;
+
+    wire        out_mem_wen;
+    wire [4:0]  out_mem_wa;
+    wire [71:0] out_mem_wd;
+    wire [4:0]  out_mem_ra;
+    wire [71:0] out_mem_q;
 
     // --- Input controller ---
     wire        input_job_start, input_job_done, input_bus_err;
@@ -301,7 +314,8 @@ module aes_decrypt_engine (
         .wr1_req_addr      (wr1_req_addr),   .wr1_req_len  (wr1_req_len),
         .wr1_req_cache     (wr1_req_cache),  .wr1_req_prot (wr1_req_prot),
         .wr1_wdata         (wr1_wdata),      .wr1_wstrb    (wr1_wstrb),
-        .wr1_wvalid        (wr1_wvalid),     .wr1_wready   (wr1_wready),
+        .wr1_wvalid        (wr1_wvalid),     .wr1_wlast    (wr1_wlast),
+        .wr1_wready        (wr1_wready),
         .wr1_resp_valid    (wr1_resp_valid), .wr1_resp_err (wr1_resp_err),
         .max_rd_outstanding(max_rd_outstanding),
         .max_wr_outstanding(max_wr_outstanding),
@@ -346,7 +360,13 @@ module aes_decrypt_engine (
         .cipher_valid      (cipher_valid),  .cipher_data   (cipher_data),
         .cipher_bvalid     (cipher_bvalid), .cipher_stall  (cipher_stall),
         .crc_expected      (crc_expected),  .crc_valid     (crc_valid),
-        .bus_err           (input_bus_err)
+        .bus_err           (input_bus_err),
+        // SRAM memory interface
+        .cipher_mem_wen    (cipher_mem_wen),
+        .cipher_mem_wa     (cipher_mem_wa),
+        .cipher_mem_wd     (cipher_mem_wd),
+        .cipher_mem_ra     (cipher_mem_ra),
+        .cipher_mem_q      (cipher_mem_q)
     );
 
     // --- AES-128 CTR ---
@@ -389,10 +409,17 @@ module aes_decrypt_engine (
         .wr_req_addr       (wr1_req_addr),   .wr_req_len   (wr1_req_len),
         .wr_req_cache      (wr1_req_cache),  .wr_req_prot  (wr1_req_prot),
         .wr_wvalid         (wr1_wvalid),     .wr_wready    (wr1_wready),
+        .wr_wlast          (wr1_wlast),
         .wr_wdata          (wr1_wdata),      .wr_wstrb     (wr1_wstrb),
         .wr_resp_valid     (wr1_resp_valid), .wr_resp_err  (wr1_resp_err),
         .awcache_out       (awcache_out),    .awprot_out   (awprot_out),
-        .bus_err           (output_bus_err)
+        .bus_err           (output_bus_err),
+        // SRAM memory interface
+        .out_mem_wen       (out_mem_wen),
+        .out_mem_wa        (out_mem_wa),
+        .out_mem_wd        (out_mem_wd),
+        .out_mem_ra        (out_mem_ra),
+        .out_mem_q         (out_mem_q)
     );
 
     // --- Descriptor write-back ---
@@ -409,6 +436,23 @@ module aes_decrypt_engine (
         .wr_resp_valid     (wr0_resp_valid),.wr_resp_err   (wr0_resp_err),
         .arcache_desc      (arcache_desc), .arprot_desc    (arprot_desc),
         .bus_err           (wb_bus_err)
+    );
+
+    // --- Memory top (all compiled SRAMs — MBIST boundary) ---
+    aes_decrypt_mem_top u_mem_top (
+        .clk             (clk),
+        // Cipher FIFO SRAM (32 × 64-bit)
+        .cipher_mem_wen  (cipher_mem_wen),
+        .cipher_mem_wa   (cipher_mem_wa),
+        .cipher_mem_wd   (cipher_mem_wd),
+        .cipher_mem_ra   (cipher_mem_ra),
+        .cipher_mem_q    (cipher_mem_q),
+        // Output FIFO SRAM (32 × 72-bit)
+        .out_mem_wen     (out_mem_wen),
+        .out_mem_wa      (out_mem_wa),
+        .out_mem_wd      (out_mem_wd),
+        .out_mem_ra      (out_mem_ra),
+        .out_mem_q       (out_mem_q)
     );
 
     // --- Top-level control FSM ---

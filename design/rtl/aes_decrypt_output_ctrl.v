@@ -46,6 +46,7 @@ module aes_decrypt_output_ctrl (
     input  wire        wr_wready,
     output wire [63:0] wr_wdata,
     output wire [ 7:0] wr_wstrb,
+    output wire        wr_wlast,        // last beat of current write burst
 
     input  wire        wr_resp_valid,
     input  wire        wr_resp_err,
@@ -57,7 +58,16 @@ module aes_decrypt_output_ctrl (
     input  wire [2:0]  awprot_out,
 
     // Bus error output
-    output reg         bus_err
+    output reg         bus_err,
+
+    // -------------------------------------------------------------------------
+    // Output FIFO external SRAM interface (pass-through to aes_decrypt_mem_top)
+    // -------------------------------------------------------------------------
+    output wire        out_mem_wen,
+    output wire [4:0]  out_mem_wa,
+    output wire [71:0] out_mem_wd,
+    output wire [4:0]  out_mem_ra,
+    input  wire [71:0] out_mem_q
 );
 
     assign wr_req_cache = awcache_out;
@@ -86,7 +96,13 @@ module aes_decrypt_output_ctrl (
         .rd_data     (out_fifo_rd_data),
         .empty       (out_fifo_empty),
         .almost_empty(),
-        .count       ()
+        .count       (),
+        // External SRAM interface — routed to aes_decrypt_mem_top
+        .mem_wen     (out_mem_wen),
+        .mem_wa      (out_mem_wa),
+        .mem_wd      (out_mem_wd),
+        .mem_ra      (out_mem_ra),
+        .mem_q       (out_mem_q)
     );
 
     // Back-pressure to AES core: stall when output FIFO is almost full
@@ -182,11 +198,13 @@ module aes_decrypt_output_ctrl (
     assign out_fifo_rd_en = (ws == WS_DATA) && wr_wvalid && wr_wready && !out_fifo_empty;
 
     // W channel outputs
-    assign wr_wvalid = (ws == WS_DATA)  && !out_fifo_empty
+    assign wr_wvalid = ((ws == WS_DATA) && !out_fifo_empty)
                      || (ws == WS_PAD);
-    assign wr_wdata  = (ws == WS_PAD)  ? 64'h0 : out_fifo_rd_data[63:0];
-    assign wr_wstrb  = (ws == WS_PAD)  ? pad_strobe(pad_bytes_rem)
-                                       : out_fifo_rd_data[71:64];
+    assign wr_wdata  = (ws == WS_PAD) ? 64'h0 : out_fifo_rd_data[63:0];
+    assign wr_wstrb  = (ws == WS_PAD) ? pad_strobe(pad_bytes_rem)
+                                      : out_fifo_rd_data[71:64];
+    // wlast: asserted on the final beat of each AXI write burst
+    assign wr_wlast  = wr_wvalid && (burst_beats_rem == 8'd1);
 
     function automatic [7:0] pad_strobe;
         input [7:0] remaining;

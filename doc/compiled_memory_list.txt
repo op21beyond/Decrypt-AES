@@ -1,0 +1,101 @@
+================================================================================
+AES Decryption Engine IP — Compiled SRAM Candidate List
+Project  : AES Decryption Engine IP
+Company  : SSVD
+Date     : 2026-04-13
+================================================================================
+
+OVERVIEW
+--------
+The following register arrays in the RTL have been identified as candidates for
+replacement with foundry-compiled SRAM macros.  All other flip-flop arrays
+(pipeline stages, shift registers, small holding registers) are left as standard
+flip-flop implementations and are NOT listed here.
+
+Criterion for SRAM candidacy:
+  - Depth >= 32 entries AND data width >= 32 bits
+  - Used as a true read/write storage (FIFO buffer, not a pipeline shift register)
+  - Separable read and write access patterns (single- or dual-port SRAM applicable)
+
+================================================================================
+SRAM LIST
+================================================================================
+
+No.  Instance Path (from DUT top: aes_decrypt_engine)
+     └─ Module                       : SRAM Model Used
+        Storage Size                 : Depth × Width
+        Original RTL Declaration     : (file:line)
+        Access Pattern               : Read / Write
+        Notes
+--------------------------------------------------------------------------------
+
+1.   u_input_ctrl / u_cipher_fifo / (memory)
+     └─ Module                       : sram_2p_32x64
+        Storage Size                 : 32 words × 64 bits = 256 bytes
+        Original RTL Declaration     : design/rtl/util/sync_fifo.v
+                                       reg [63:0] mem [0:31]
+                                       (sync_fifo #(.DATA_W(64), .DEPTH(32)))
+        Access Pattern               : Write: synchronous (posedge clk, WEN)
+                                       Read : asynchronous (combinational Q = MEM[RA])
+        Purpose                      : Ciphertext beat FIFO — buffers 64-bit AXI
+                                       read beats from the input buffer before they
+                                       are consumed by the AES CTR assembler.
+        Notes                        : Instantiated in aes_decrypt_input_ctrl.
+                                       In aes_decrypt_mem_top as u_sram_cipher_fifo.
+
+--------------------------------------------------------------------------------
+
+2.   u_output_ctrl / u_out_fifo / (memory)
+     └─ Module                       : sram_2p_32x72
+        Storage Size                 : 32 words × 72 bits = 288 bytes
+        Original RTL Declaration     : design/rtl/util/sync_fifo.v
+                                       reg [71:0] mem [0:31]
+                                       (sync_fifo #(.DATA_W(72), .DEPTH(32)))
+        Access Pattern               : Write: synchronous (posedge clk, WEN)
+                                       Read : asynchronous (combinational Q = MEM[RA])
+        Purpose                      : Output beat FIFO — buffers {strobe[7:0], data[63:0]}
+                                       beats from the AES plaintext output before
+                                       they are written back to the output buffer.
+        Notes                        : Instantiated in aes_decrypt_output_ctrl.
+                                       In aes_decrypt_mem_top as u_sram_out_fifo.
+
+================================================================================
+NON-SRAM FLIP-FLOP ARRAYS (excluded from SRAM mapping)
+================================================================================
+
+The following reg arrays are intentionally implemented as flip-flops and must
+NOT be remapped to compiled SRAMs:
+
+  * aes128_enc_pipe.v   — stage[0:9] (128b × 10)     : AES pipeline stage registers
+  * aes128_enc_pipe.v   — valid_pipe[0:9] (1b × 10)   : Pipeline valid propagation
+  * aes128_ctr_top.v    — cipher_delay[0:9] (128b × 10): Ciphertext alignment shift reg
+  * aes128_ctr_top.v    — cipher_valid_delay[0:9](1b×10): Valid alignment shift reg
+  * aes_decrypt_axi_mgr.v — rd_id_fifo[15:0]          : 16-bit ID routing register
+  * aes_decrypt_axi_mgr.v — wr_id_fifo[15:0]          : 16-bit ID routing register
+
+  Reason: All of the above are either too shallow (depth < 32), too narrow
+  (< 32 bits), or are pipeline shift registers where SRAM replacement would
+  degrade timing and add unnecessary complexity.
+
+================================================================================
+SRAM INTERFACE CONVENTION
+================================================================================
+
+Both SRAMs use an asynchronous-read dual-port style (write-synchronous,
+read-asynchronous) to match the show-ahead FIFO read behavior:
+
+  CLK   : Rising-edge clock for write operations
+  WEN   : Write enable (active high)
+  WA    : Write address
+  WD    : Write data
+  RA    : Read address (asynchronous)
+  Q     : Read data output (combinational, Q = MEM[RA])
+
+This interface must be matched when substituting foundry-compiled SRAM macros.
+If the foundry SRAM provides only synchronous read, an additional output
+pipeline stage must be added to the sync_fifo controller and the read latency
+(empty / valid timing) must be re-verified.
+
+================================================================================
+END OF DOCUMENT
+================================================================================
