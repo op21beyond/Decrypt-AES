@@ -1,0 +1,101 @@
+name: Verilator Smoke Test
+
+# Trigger on any push/PR that touches RTL, testbench, or host software.
+on:
+  push:
+    paths:
+      - 'design/rtl/**'
+      - 'design/tb/**'
+      - 'design/tb_verilator/**'
+      - 'host_software/**'
+  pull_request:
+    paths:
+      - 'design/rtl/**'
+      - 'design/tb/**'
+      - 'design/tb_verilator/**'
+      - 'host_software/**'
+
+jobs:
+  simulate:
+    name: Verilator 5.043 / GCC 11 / Ubuntu 22.04
+    runs-on: ubuntu-22.04
+
+    steps:
+      # -----------------------------------------------------------------------
+      # 1. Checkout
+      # -----------------------------------------------------------------------
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # -----------------------------------------------------------------------
+      # 2. Install build dependencies
+      # -----------------------------------------------------------------------
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y \
+            git autoconf flex bison help2man \
+            gcc-11 g++-11 make
+
+      # -----------------------------------------------------------------------
+      # 3. Build Verilator 5.043 from source (cached by version tag)
+      # -----------------------------------------------------------------------
+      - name: Cache Verilator 5.043 build
+        id: cache-verilator
+        uses: actions/cache@v4
+        with:
+          path: ~/verilator-install
+          key: verilator-5.043-ubuntu-22.04-gcc11
+
+      - name: Build Verilator 5.043
+        if: steps.cache-verilator.outputs.cache-hit != 'true'
+        run: |
+          git clone --depth 1 --branch v5.043 \
+            https://github.com/verilator/verilator /tmp/verilator
+          cd /tmp/verilator
+          autoconf
+          ./configure --prefix="$HOME/verilator-install"
+          make -j$(nproc)
+          make install
+
+      - name: Add Verilator to PATH
+        run: echo "$HOME/verilator-install/bin" >> "$GITHUB_PATH"
+
+      # -----------------------------------------------------------------------
+      # 4. Set GCC 11 as default compiler
+      # -----------------------------------------------------------------------
+      - name: Set GCC 11 as default
+        run: |
+          sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-11 100
+          sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-11 100
+
+      # -----------------------------------------------------------------------
+      # 5. Verify tool versions
+      # -----------------------------------------------------------------------
+      - name: Print tool versions
+        run: |
+          verilator --version
+          gcc --version
+          g++ --version
+
+      # -----------------------------------------------------------------------
+      # 6. Run simulation
+      # -----------------------------------------------------------------------
+      - name: Run Verilator simulation
+        run: |
+          cd design/tb_verilator
+          chmod +x run.sh
+          ./run.sh
+
+      # -----------------------------------------------------------------------
+      # 7. Upload artifacts (always, so failures are diagnosable)
+      # -----------------------------------------------------------------------
+      - name: Upload simulation artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: sim-artifacts-${{ github.run_id }}
+          path: |
+            design/tb_verilator/out/verilator_console.log
+            design/tb_verilator/out/dump.fst
+          retention-days: 7
