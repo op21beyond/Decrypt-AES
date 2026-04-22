@@ -1,0 +1,42 @@
+---
+title: "AI한테 칩 설계 시켜봤다"
+subtitle: "하드웨어 엔지니어를 위한 바이브코딩 실전 입문"
+author: "SSVD SoC Team"
+date: "2026"
+lang: ko
+language: ko
+
+# EPUB / PDF 설정
+cover-image: "assets/cover.png"
+toc: true
+toc-depth: 2
+number-sections: true
+colorlinks: true
+linkcolor: blue
+
+# 문서 메타
+description: |
+  SoC·IP 개발 경험이 있는 하드웨어 엔지니어를 대상으로,
+  Claude Code를 활용한 AES 복호화 IP 개발 과정을 3일간의
+  실전 기록으로 담은 바이브코딩 입문서.
+subject: "Hardware Design, AI-Assisted Development, Vibe Coding"
+keywords:
+  - Vibe Coding
+  - RTL Design
+  - AES
+  - AXI4
+  - Claude Code
+  - Hardware IP
+  - Verilog
+
+# Word (DOCX) 스타일
+# reference-doc: reference.docx   # 커스텀 스타일 적용 시 사용
+
+# PDF 여백 (HTML→PDF 경로)
+margin-top: 25mm
+margin-bottom: 25mm
+margin-left: 25mm
+margin-right: 20mm
+
+fontsize: 11pt
+---

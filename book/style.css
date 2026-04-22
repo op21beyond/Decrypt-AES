@@ -1,0 +1,183 @@
+/* =================================================================
+   style.css — 「AI한테 칩 설계 시켜봤다」 PDF/HTML 스타일
+   ================================================================= */
+
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&family=Noto+Serif+KR:wght@400;700&family=JetBrains+Mono:wght@400;700&display=swap');
+
+/* ---- 기본 페이지 설정 ---- */
+@page {
+    size: A5;
+    margin: 22mm 18mm 22mm 22mm;
+}
+
+body {
+    font-family: 'Noto Serif KR', 'Noto Sans KR', 'Malgun Gothic', serif;
+    font-size: 10.5pt;
+    line-height: 1.85;
+    color: #1a1a1a;
+    max-width: 680px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+/* ---- 제목 계층 ---- */
+h1 {
+    font-family: 'Noto Sans KR', sans-serif;
+    font-size: 22pt;
+    font-weight: 700;
+    color: #0d2d6e;
+    margin-top: 48pt;
+    margin-bottom: 12pt;
+    padding-bottom: 6pt;
+    border-bottom: 2.5px solid #0d2d6e;
+    page-break-before: always;
+}
+
+h1:first-of-type {
+    page-break-before: avoid;
+}
+
+h2 {
+    font-family: 'Noto Sans KR', sans-serif;
+    font-size: 14pt;
+    font-weight: 700;
+    color: #1e3a6e;
+    margin-top: 28pt;
+    margin-bottom: 8pt;
+    padding-left: 8pt;
+    border-left: 4px solid #3b82f6;
+}
+
+h3 {
+    font-family: 'Noto Sans KR', sans-serif;
+    font-size: 11.5pt;
+    font-weight: 500;
+    color: #374151;
+    margin-top: 18pt;
+    margin-bottom: 6pt;
+}
+
+/* ---- 코드 블록 ---- */
+pre {
+    font-family: 'JetBrains Mono', 'Consolas', 'D2Coding', monospace;
+    font-size: 8.5pt;
+    line-height: 1.55;
+    background-color: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-left: 4px solid #3b82f6;
+    border-radius: 4px;
+    padding: 12px 14px;
+    overflow-x: auto;
+    margin: 12pt 0;
+    page-break-inside: avoid;
+}
+
+code {
+    font-family: 'JetBrains Mono', 'Consolas', 'D2Coding', monospace;
+    font-size: 8.5pt;
+    background-color: #f0f4f8;
+    color: #c0392b;
+    padding: 2px 5px;
+    border-radius: 3px;
+}
+
+pre code {
+    background: none;
+    color: inherit;
+    padding: 0;
+}
+
+/* ---- 표 ---- */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 12pt 0;
+    font-size: 9.5pt;
+    page-break-inside: avoid;
+}
+
+th {
+    background-color: #1e3a6e;
+    color: white;
+    padding: 7px 10px;
+    text-align: left;
+    font-weight: 600;
+}
+
+td {
+    padding: 6px 10px;
+    border-bottom: 1px solid #e5e7eb;
+    vertical-align: top;
+}
+
+tr:nth-child(even) td {
+    background-color: #f9fafb;
+}
+
+/* ---- 인용문 (프롬프트 강조) ---- */
+blockquote {
+    margin: 14pt 0;
+    padding: 10px 16px;
+    border-left: 4px solid #10b981;
+    background-color: #f0fdf4;
+    color: #065f46;
+    font-style: normal;
+    border-radius: 0 4px 4px 0;
+}
+
+blockquote p {
+    margin: 4px 0;
+}
+
+/* ---- 이미지 플레이스홀더 ---- */
+blockquote em strong,
+blockquote strong em {
+    background-color: #fffbeb;
+    border: 1px dashed #f59e0b;
+    padding: 4px 8px;
+    border-radius: 4px;
+    display: block;
+    margin: 4px 0;
+    color: #92400e;
+}
+
+/* ---- 목차 ---- */
+#TOC {
+    background-color: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+    padding: 16px 20px;
+    margin-bottom: 24pt;
+}
+
+#TOC ul {
+    padding-left: 18px;
+}
+
+#TOC li {
+    margin: 4px 0;
+    font-size: 9.5pt;
+}
+
+/* ---- 수평선 ---- */
+hr {
+    border: none;
+    border-top: 1px solid #d1d5db;
+    margin: 20pt 0;
+}
+
+/* ---- 리스트 ---- */
+ul, ol {
+    padding-left: 22px;
+    margin: 8pt 0;
+}
+
+li {
+    margin: 3px 0;
+}
+
+/* ---- 링크 ---- */
+a {
+    color: #2563eb;
+    text-decoration: none;
+}

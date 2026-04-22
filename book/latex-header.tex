@@ -1,0 +1,57 @@
+% XeLaTeX 한글 설정 헤더
+\usepackage{fontspec}
+\usepackage{xeCJK}
+
+% 본문 폰트: 맑은 고딕 (시스템 설치 확인됨)
+\setmainfont{Malgun Gothic}
+\setsansfont{Malgun Gothic}
+\setCJKmainfont{Malgun Gothic}
+\setCJKsansfont{Malgun Gothic}
+\setCJKmonofont{Malgun Gothic}
+
+% 코드 블록 폰트
+\setmonofont{Consolas}
+
+% 한글 줄간격 및 문단
+\usepackage{setspace}
+\setstretch{1.6}
+
+% 색상, 하이퍼링크
+\usepackage{xcolor}
+\definecolor{codeblue}{RGB}{37,99,235}
+\definecolor{codegray}{RGB}{248,249,250}
+\definecolor{codered}{RGB}{192,57,43}
+
+% 코드 블록 스타일
+\usepackage{fancyvrb}
+\usepackage{fvextra}
+
+% 페이지 여백
+\usepackage{geometry}
+\geometry{
+  a5paper,
+  top=22mm,
+  bottom=22mm,
+  left=22mm,
+  right=18mm
+}
+
+% 챕터/섹션 스타일
+\usepackage{titlesec}
+\titleformat{\chapter}[display]
+  {\normalfont\huge\bfseries\color{codeblue}}
+  {\chaptertitlename\ \thechapter}{20pt}{\Huge}
+
+% 목차
+\usepackage{tocloft}
+\setlength{\cftbeforesecskip}{2pt}
+
+% 표 스타일
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage{colortbl}
+\arrayrulecolor{gray!30}
+
+% 이미지
+\usepackage{graphicx}

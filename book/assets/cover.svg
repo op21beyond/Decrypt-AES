@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1800" height="2700" viewBox="0 0 1800 2700" role="img" aria-label="AI한테 칩 설계 시켜봤다 cover">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#07111f" />
+      <stop offset="100%" stop-color="#1c0f2e" />
+    </linearGradient>
+    <filter id="blur40"><feGaussianBlur stdDeviation="40"/></filter>
+    <filter id="blur8"><feGaussianBlur stdDeviation="8"/></filter>
+  </defs>
+  <rect width="1800" height="2700" fill="url(#bg)"/>
+  <ellipse cx="1400" cy="470" rx="340" ry="300" fill="#00d6c9" fill-opacity="0.28" filter="url(#blur40)"/>
+  <ellipse cx="460" cy="2180" rx="360" ry="360" fill="#ff7a3d" fill-opacity="0.24" filter="url(#blur40)"/>
+  <rect x="150" y="170" width="1500" height="2360" rx="64" fill="#080e1bd6" stroke="#ffffff33" stroke-width="2"/>
+  <rect x="270" y="320" width="1260" height="900" rx="56" fill="#0f1b31" stroke="#7ef5ec" stroke-width="5"/>
+  <rect x="360" y="410" width="1080" height="720" rx="40" fill="#13284a" stroke="#9fd8ff" stroke-width="3"/>
+  <g fill="#98f6ef">
+    <rect x="410" y="270" width="44" height="50" rx="10"/><rect x="505" y="270" width="44" height="50" rx="10"/><rect x="600" y="270" width="44" height="50" rx="10"/><rect x="695" y="270" width="44" height="50" rx="10"/><rect x="790" y="270" width="44" height="50" rx="10"/><rect x="885" y="270" width="44" height="50" rx="10"/><rect x="980" y="270" width="44" height="50" rx="10"/><rect x="1075" y="270" width="44" height="50" rx="10"/><rect x="1170" y="270" width="44" height="50" rx="10"/><rect x="1265" y="270" width="44" height="50" rx="10"/><rect x="1360" y="270" width="44" height="50" rx="10"/>
+    <rect x="410" y="1220" width="44" height="50" rx="10"/><rect x="505" y="1220" width="44" height="50" rx="10"/><rect x="600" y="1220" width="44" height="50" rx="10"/><rect x="695" y="1220" width="44" height="50" rx="10"/><rect x="790" y="1220" width="44" height="50" rx="10"/><rect x="885" y="1220" width="44" height="50" rx="10"/><rect x="980" y="1220" width="44" height="50" rx="10"/><rect x="1075" y="1220" width="44" height="50" rx="10"/><rect x="1170" y="1220" width="44" height="50" rx="10"/><rect x="1265" y="1220" width="44" height="50" rx="10"/><rect x="1360" y="1220" width="44" height="50" rx="10"/>
+    <rect x="220" y="485" width="50" height="46" rx="10"/><rect x="220" y="595" width="50" height="46" rx="10"/><rect x="220" y="705" width="50" height="46" rx="10"/><rect x="220" y="815" width="50" height="46" rx="10"/><rect x="220" y="925" width="50" height="46" rx="10"/><rect x="220" y="1035" width="50" height="46" rx="10"/>
+    <rect x="1530" y="485" width="50" height="46" rx="10"/><rect x="1530" y="595" width="50" height="46" rx="10"/><rect x="1530" y="705" width="50" height="46" rx="10"/><rect x="1530" y="815" width="50" height="46" rx="10"/><rect x="1530" y="925" width="50" height="46" rx="10"/><rect x="1530" y="1035" width="50" height="46" rx="10"/>
+  </g>
+  <g fill="none" stroke-linecap="round" stroke-linejoin="round" filter="url(#blur8)">
+    <path d="M420 770 H620 L760 620 H1060 L1180 740 H1360" stroke="#7ef5ec" stroke-opacity="0.8" stroke-width="10"/>
+    <path d="M520 980 H760 L980 860 H1280" stroke="#ff9062" stroke-opacity="0.75" stroke-width="10"/>
+    <path d="M440 560 H620 L760 700" stroke="#95d5ff" stroke-opacity="0.75" stroke-width="8"/>
+  </g>
+  <g font-family="'Malgun Gothic','NanumGothic','Apple SD Gothic Neo',sans-serif">
+    <text x="445" y="520" font-size="74" font-weight="700" fill="#d7fbff">VIBE</text>
+    <text x="830" y="520" font-size="74" font-weight="700" fill="#ffb18c">RTL</text>
+    <text x="450" y="640" font-size="40" fill="#8edce5">AES  CTR  AXI4  CI</text>
+    <text x="450" y="845" font-size="34" fill="#9fd8ff">0100 0001 0100 1001</text>
+    <text x="450" y="910" font-size="34" fill="#ffd2bf">chip.craft(ai_assisted=True)</text>
+    <text x="230" y="1520" font-size="138" font-weight="700" fill="#f8fbff">AI한테</text>
+    <text x="230" y="1675" font-size="138" font-weight="700" fill="#86fff2">칩 설계</text>
+    <text x="230" y="1830" font-size="138" font-weight="700" fill="#ff9a69">시켜봤다</text>
+    <text x="236" y="1930" font-size="54" fill="#d5dfef">
+      <tspan x="236" dy="0">하드웨어 엔지니어를 위한</tspan>
+      <tspan x="236" dy="78">생각보다 현실적인 바이브코딩 실전 입문</tspan>
+    </text>
+    <text x="236" y="2148" font-size="40" fill="#a9bdd7">
+      <tspan x="236" dy="0">사양서부터 RTL, 테스트벤치, CI까지.</tspan>
+      <tspan x="236" dy="58">AI와 함께 3일 만에 AES IP를 만든 기록.</tspan>
+    </text>
+    <rect x="236" y="2360" width="284" height="70" rx="18" fill="#102646" stroke="#7ef5ec" stroke-width="2"/>
+    <text x="270" y="2408" font-size="34" font-weight="700" fill="#d9ffff">SSVD SoC Team</text>
+    <text x="1180" y="2406" font-size="34" font-weight="700" fill="#d7dfed">2026</text>
+  </g>
+</svg>
